@@ -1,0 +1,88 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model user {
+  id       String   @id @default(cuid()) @map("_id")
+  email    String   @unique
+  password String
+  projects String[] @default([]) // Store project IDs as an array of strings
+}
+
+model Project {
+  id       String   @id @default(cuid()) @map("_id")
+  name     String
+  users    String[] @default([])
+  fileTree Json     @default("{}")
+  version  Int      @default(0) @map("__v")
+}
+
+// model user {
+//   id       String @id @default(cuid()) @map("_id")
+//   email    String @unique
+//   password String
+// }
+
+// model Project {
+//   id      String   @id @default(cuid()) @map("_id")
+//   name    String // Project name
+//   users   String[] // Array of user IDs
+//   version Int      @default(0) @map("__v")
+// }
+
+// model user {
+//   id       String        @id @default(cuid()) @map("_id")
+//   email    String        @unique
+//   password String
+//   projects UserProject[]
+// }
+
+// model Project {
+//   id      String        @id @default(cuid()) @map("_id")
+//   name    String        @unique
+//   users   UserProject[]
+//   version Int           @default(0) @map("__v")
+// }
+
+// model UserProject {
+//   id        String  @id @default(cuid()) @map("_id")
+//   userId    String
+//   projectId String
+//   user      user    @relation(fields: [userId], references: [id])
+//   project   Project @relation(fields: [projectId], references: [id])
+
+//   @@unique([userId, projectId])
+// }
+
+// model User {
+//   id       String     @id @default(cuid()) @map("_id")
+//   name     String
+//   projects ProjectUser[]
+// }
+
+// model Project {
+//   id      String     @id @default(cuid()) @map("_id")
+//   name    String
+//   users   ProjectUser[]
+//   version Int        @default(0) @map("__v")
+// }
+
+// model UserProjects {
+//   id        String   @id @default(cuid())
+//   user      User     @relation(fields: [userId], references: [id])
+//   userId    String
+//   project   Project  @relation(fields: [projectId], references: [id])
+//   projectId String
+//   createdAt DateTime @default(now())
+// }
