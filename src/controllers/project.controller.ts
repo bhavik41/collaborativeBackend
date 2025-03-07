@@ -21,7 +21,8 @@ export const createProjectController = async (req: AuthenticatedRequest, res: Re
 
     try {
 
-        const { name } = req.body;
+        const { name, language, description } = req.body;
+
 
         const LoggedInUser = await prisma.user.findUnique({
             where: {
@@ -33,7 +34,7 @@ export const createProjectController = async (req: AuthenticatedRequest, res: Re
 
         const userId = LoggedInUser.id
 
-        const newProject = await projectSevice.createProject({ name, userId })
+        const newProject = await projectSevice.createProject({ name, userId, language, description })
 
         res.status(201).json({ newProject: newProject })
 
@@ -57,6 +58,7 @@ export const getAllProjectController = async (req: AuthenticatedRequest, res: Re
         if (!loggedInUser) {
             return res.status(404).json({ message: 'User not found' });
         }
+        console.log(loggedInUser.id)
         const allUserProjects = await projectSevice.getAllProjectByUserId({ userId: loggedInUser.id })
 
         return res.status(200).json({ Projects: allUserProjects })
@@ -129,6 +131,54 @@ export const getProjetctByIdController = async (req: AuthenticatedRequest, res: 
         }
     }
 
+}
+
+export const renameProjectController = async (req: AuthenticatedRequest, res: Response): Promise<any> => {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() })
+    }
+    try {
+        const { projectId } = req.params;
+        const { name } = req.body;
+        const userId = req.user.userId;
+
+        const project = await projectSevice.renameProject({ projectId, name, userId })
+        return res.status(200).json({ project })
+    } catch (err) {
+        if (err instanceof Error) {
+            res.status(400).json({
+                error: err.message
+            });
+        } else {
+            res.status(400).json({
+                error: 'An unknown error occurred'
+            })
+        }
+    }
+}
+
+export const deleteProjectController = async (req: AuthenticatedRequest, res: Response): Promise<any> => {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() })
+    }
+    try {
+        const { projectId } = req.params;
+        const userId = req.user.userId;
+        const project = await projectSevice.deleteProject({ projectId, userId })
+        return res.status(200).json({ project })
+    } catch (err) {
+        if (err instanceof Error) {
+            res.status(400).json({
+                error: err.message
+            });
+        } else {
+            res.status(400).json({
+                error: 'An unknown error occurred'
+            });
+        }
+    }
 }
 
 export const updateFileTree = async (req: AuthenticatedRequest, res: Response): Promise<any> => {

@@ -103,51 +103,10 @@ io.on('connection', (socket: AuthenticatedSocket) => {
         socket.broadcast.to(socket.project.id).emit('fileTree-update', data);
     })
 
-    socket.on('user-cursor-move', (data) => {
-        if (!data || !data.position) {
-            console.warn("⚠️ Invalid cursor data received:", data);
-            return;
-        }
-
-        console.log(`📌 Cursor moved by ${socket.user.email || "Unknown User"}:`, data.position);
-
-        // Broadcast cursor position to others
-        socket.broadcast.to(socket.project.id).emit('update-cursor', {
-            userId: socket.user?.id || socket.id, // Fallback to socket ID
-            username: socket.user?.email,
-            position: data.position,
-        });
-    });
-
-    // Capture text highlighting
-    socket.on('user-highlight', (data) => {
-        if (!data || !data.range) {
-            console.warn("⚠️ Invalid highlight data received:", data);
-            return;
-        }
-
-        console.log(`🖍️ Highlight by ${socket.user?.email || "Unknown User"}:`, data.range);
-
-        // Broadcast highlight event to others
-        socket.broadcast.to(socket.project.id).emit('update-highlight', {
-            userId: socket.user?.id || socket.id,
-            username: socket.user?.email,
-            range: data.range,
-        });
-    });
-
-
 
     socket.on('event', data => { /* … */ });
     socket.on('disconnect', () => {
         console.log('a user disconnected');
-
-        socket.broadcast.to(socket.project.id).emit('remove-cursor', {
-            userId: socket.user.id,
-            username: socket.user?.email,
-        });
-
-
         socket.leave(socket.project.id);
     });
 });

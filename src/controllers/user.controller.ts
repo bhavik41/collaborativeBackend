@@ -59,7 +59,7 @@ export const profileController = async (req: AuthenticatedRequest, res: Response
         console.log(req.user)
         return res.status(200).json({
             mess: 'success',
-            user: req.user
+            user: { id: req.user.userId, email: req.user.email }
         })
 
     } catch (error) {

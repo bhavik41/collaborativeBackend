@@ -7,6 +7,8 @@ const router = Router()
 router.post('/create',
     authMiddleware.authUser,
     body('name').isString().withMessage('Name is required'),
+    body('language').isString().withMessage('Language is required'),
+    body('description').isString().withMessage('Description is required'),
     projectController.createProjectController
 )
 
@@ -34,5 +36,15 @@ router.put('/update-file-tree',
     projectController.updateFileTree
 )
 
+router.delete('/delete/:projectId',
+    authMiddleware.authUser,
+    projectController.deleteProjectController
+)
+
+router.patch('/rename/:projectId',
+    authMiddleware.authUser,
+    body('name').isString().withMessage('projectName is required'),
+    projectController.renameProjectController
+)
 
 export default router;

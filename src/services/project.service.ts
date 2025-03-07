@@ -5,7 +5,9 @@ const prisma = new PrismaClient();
 
 interface createProjectParams {
     name: string;
-    userId: string
+    userId: string;
+    language: string;
+    description: string;
 }
 
 interface getAllProjectByUserIdParams {
@@ -26,10 +28,22 @@ interface updateFileTreeParams {
     projectId: string;
     fileTree: any;
 }
+interface updateProjectParams {
+    projectId: string;
+    name: string;
+    userId: string;
+}
+
+interface deleteProjectParams {
+    projectId: string;
+    userId: string
+}
 
 export const createProject = async ({
     name,
-    userId
+    userId,
+    language,
+    description
 }: createProjectParams) => {
 
     if (!name) throw new Error("Project name is required");
@@ -61,7 +75,10 @@ export const createProject = async ({
         project = await prisma.project.create({
             data: {
                 name,
-                users: [userId]
+                users: [userId],
+                creator: userId,
+                language,
+                description
             },
             select: {
                 id: true,
@@ -81,6 +98,7 @@ export const createProject = async ({
 }
 
 export const getAllProjectByUserId = async ({ userId }: getAllProjectByUserIdParams) => {
+    console.log(userId)
 
     if (!userId) throw new Error("User ID is required");
 
@@ -215,10 +233,10 @@ export const getProjectById = async ({ projectId }: getProjrectByIdParams) => {
         where: {
             id: { in: project.users } // Fetch users whose IDs match those in the project
         },
-        select: {
-            id: true,
-            email: true
-        }
+        // select: {
+        //     id: true,
+        //     email: true,
+        // }
     });
 
     // Return project with user details
@@ -248,4 +266,43 @@ export const updateFileTree = async ({ projectId, fileTree }: updateFileTreePara
     })
 
     return project
+}
+
+export const renameProject = async ({ projectId, name, userId }: updateProjectParams) => {
+    const isproject = await prisma.project.findUnique({
+        where: {
+            id: projectId
+        }
+    })
+
+    if (isproject?.creator !== userId) throw new Error(`anuthorized to update this project`);
+    if (!isproject) throw new Error(`Project not found`);
+
+    const project = await prisma.project.update({
+        where: {
+            id: projectId
+        },
+        data: {
+            name: name
+        }
+    })
+
+    return project
+}
+
+export const deleteProject = async ({ projectId, userId }: deleteProjectParams) => {
+    const isproject = await prisma.project.findUnique({
+        where: {
+            id: projectId
+        }
+    })
+    if (isproject?.creator !== userId) throw new Error(`anuthorized to update this project`);
+    if (!isproject) throw new Error(`Project not found`);
+    const deleteProject = await prisma.project.delete({
+        where: {
+            id: projectId
+        }
+    })
+
+    return deleteProject
 }

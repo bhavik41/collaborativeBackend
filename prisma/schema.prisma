@@ -21,11 +21,14 @@ model user {
 }
 
 model Project {
-  id       String   @id @default(cuid()) @map("_id")
-  name     String
-  users    String[] @default([])
-  fileTree Json     @default("{}")
-  version  Int      @default(0) @map("__v")
+  id          String   @id @default(cuid()) @map("_id")
+  name        String
+  creator     String
+  language    String
+  description String
+  users       String[] @default([])
+  fileTree    Json     @default("{}")
+  version     Int      @default(0) @map("__v")
 }
 
 // model user {
