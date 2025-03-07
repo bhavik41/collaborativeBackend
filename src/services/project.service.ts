@@ -8,6 +8,7 @@ interface createProjectParams {
     userId: string;
     language: string;
     description: string;
+    creator: string
 }
 
 interface getAllProjectByUserIdParams {
@@ -83,22 +84,15 @@ export const createProject = async ({
             select: {
                 id: true,
                 name: true,
-                creator: true,
-                language: true,
-                description: true,
                 users: true
             }
         })
         return project
-
     } catch (error) {
         if (error instanceof Error && 'code' in error && (error as any).code === 11000) {
             throw new Error("Project already exists")
         } throw error
     }
-
-
-    return project;
 
 }
 
