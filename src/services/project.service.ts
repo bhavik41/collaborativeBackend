@@ -8,7 +8,6 @@ interface createProjectParams {
     userId: string;
     language: string;
     description: string;
-    creator: string
 }
 
 interface getAllProjectByUserIdParams {
