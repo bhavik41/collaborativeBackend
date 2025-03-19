@@ -2,6 +2,9 @@ import Router from 'express'
 import { body } from 'express-validator'
 import * as projectController from '../controllers/project.controller'
 import * as authMiddleware from '../middleware/auth.middleware'
+
+
+
 const router = Router()
 
 router.post('/create',
@@ -46,5 +49,11 @@ router.patch('/rename/:projectId',
     body('name').isString().withMessage('projectName is required'),
     projectController.renameProjectController
 )
+
+router.post('/share-link', authMiddleware.authUser, projectController.generateShareLink);
+
+// Join a project using a share link
+router.get('/join/:token', authMiddleware.authUser, projectController.joinProjectViaLink);
+
 
 export default router;

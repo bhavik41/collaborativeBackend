@@ -96,7 +96,7 @@ export const createProject = async ({
 }
 
 export const getAllProjectByUserId = async ({ userId }: getAllProjectByUserIdParams) => {
-    console.log(userId)
+    console.log('userid', userId)
 
     if (!userId) throw new Error("User ID is required");
 

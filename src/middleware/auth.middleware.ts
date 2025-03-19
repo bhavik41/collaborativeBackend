@@ -15,13 +15,13 @@ export const authUser = async (req: AuthenticatedRequest, res: Response, next: N
         const token = req.cookies?.token || req.headers.authorization?.split(' ')[1];
 
         if (!token) {
-            return res.status(401).send({ error: 'Unauthorized user' });
+            return res.status(401).send({ error: 'No token Unauthorized user' });
         }
 
         const isBlacklisted = await redisClient.get(token);
 
         if (isBlacklisted) {
-            return res.status(401).send({ error: 'Unauthorized user' });
+            return res.status(401).send({ error: 'redis Unauthorized user' });
         }
 
         const decoded = jwt.verify(token, process.env.SECRET_KEY || '');

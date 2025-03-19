@@ -31,6 +31,14 @@ model Project {
   version     Int      @default(0) @map("__v")
 }
 
+model ShareLink {
+  id        String   @id @default(cuid()) @map("_id")
+  token     String   @unique
+  projectId String
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+}
+
 // model user {
 //   id       String @id @default(cuid()) @map("_id")
 //   email    String @unique
