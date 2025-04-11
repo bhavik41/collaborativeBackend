@@ -6,7 +6,7 @@ import projectRoutes from './routes/project.routes'
 import aiRoutes from './routes/ai.routes'
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
-
+// import gitRoutes from './routes/git.routes';
 const prisma = new PrismaClient();
 
 const app = express();
@@ -26,48 +26,51 @@ app.use('/project', projectRoutes)
 
 app.use('/ai', aiRoutes)
 
-// In your backend (e.g., Express.js)
-app.post('/project/add-collaborator', async (req: Request, res: Response): Promise<any> => {
-    const { projectId, userId } = req.body;
-    console.log(projectId, userId)
 
-    try {
-        const project = await prisma.project.findUnique({
-            where: {
-                id: projectId
-            }
-        });
-        if (!project) {
-            return res.status(404).json({ message: 'Project not found' });
-        }
+// app.use('/git', gitRoutes);
 
-        if (project.users.includes(userId)) {
-            return res.status(400).json({ message: 'User is already a collaborator' });
-        }
+// // In your backend (e.g., Express.js)
+// app.post('/project/add-collaborator', async (req: Request, res: Response): Promise<any> => {
+//     const { projectId, userId } = req.body;
+//     console.log(projectId, userId)
 
-        // prisma.project.create({
-        //     data: {
-        //         id: userId
-        //     }
-        // })
+//     try {
+//         const project = await prisma.project.findUnique({
+//             where: {
+//                 id: projectId
+//             }
+//         });
+//         if (!project) {
+//             return res.status(404).json({ message: 'Project not found' });
+//         }
 
-        await prisma.project.update({
-            where: { id: projectId },
-            data: {
-                users: {
-                    push: userId
-                }
-            }
-        });
+//         if (project.users.includes(userId)) {
+//             return res.status(400).json({ message: 'User is already a collaborator' });
+//         }
 
-        // project.users.push(userId);
-        // await project.save();
+//         // prisma.project.create({
+//         //     data: {
+//         //         id: userId
+//         //     }
+//         // })
 
-        res.status(200).json({ message: 'Collaborator added successfully' });
-    } catch (error) {
-        res.status(500).json({ message: 'Internal Server Error' });
-    }
-});
+//         await prisma.project.update({
+//             where: { id: projectId },
+//             data: {
+//                 users: {
+//                     push: userId
+//                 }
+//             }
+//         });
+
+//         // project.users.push(userId);
+//         // await project.save();
+
+//         res.status(200).json({ message: 'Collaborator added successfully' });
+//     } catch (error) {
+//         res.status(500).json({ message: 'Internal Server Error' });
+//     }
+// });
 
 
 

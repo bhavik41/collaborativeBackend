@@ -11,7 +11,20 @@ dotenv.config();
 
 interface AuthenticatedSocket extends Socket {
     // roomId: string;
-    project: { id: string; name: string, users: string[], version?: number };
+    project: {
+        id: string;
+        name: string;
+        creator: string;
+        language: string;
+        description: string;
+        collaborators: Array<{
+            id: string;
+            accessLevel: string;
+            addedAt: Date;
+        }>;
+        fileTree: any;
+        version: number;
+    }
     user?: any;
 }
 const server = http.createServer(app);
@@ -102,6 +115,37 @@ io.on('connection', (socket: AuthenticatedSocket) => {
     socket.on('fileTree-update', async data => {
         socket.broadcast.to(socket.project.id).emit('fileTree-update', data);
     })
+
+    socket.on('file-renamed', async data => {
+        socket.broadcast.to(socket.project.id).emit('file-renamed', {
+            oldPath: data.oldPath,
+            newPath: data.newPath,
+            username: socket.user.email
+        });
+    });
+
+    socket.on('file-created', async data => {
+        socket.broadcast.to(socket.project.id).emit('file-created', {
+            path: data.path,
+            type: data.type,
+            username: socket.user.email
+        });
+    });
+
+    socket.on('files-imported', async (data) => {
+        // Broadcast the files-imported event to all clients in the project
+        socket.broadcast.to(socket.project.id).emit('files-imported', {
+            importedItems: data.importedItems,
+            username: socket.user.email
+        });
+    });
+
+    socket.on('file-deleted', async data => {
+        socket.broadcast.to(socket.project.id).emit('file-deleted', {
+            path: data.path,
+            username: socket.user.email
+        });
+    });
 
     socket.on('user-cursor-move', (data) => {
         if (!data || !data.position) {
